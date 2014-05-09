@@ -8,24 +8,20 @@ var Lab = require('lab')
   , after = Lab.after
   , mongoose = require('mongoose');
 
-var connectDb = function (mongoose, config) {
-  return function (done) {
-    if (mongoose.connection.db) return done();
-    mongoose.connect(process.env.MONGODB_URL, done);
-  };
-};
-
 describe('wercker mongodb test', function () {
-  beforeEach(connectDb());
+  beforeEach(function (done) {
+    if (mongoose.connection && mongoose.connection.db) return done();
+    mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/test', done);
+  });
 
   it('connects to db and inserts a document and finds it', function (done) {
-    mongoose.connection.db.collection('testcollection', { w: 1 }, function (err, collection) {
-      collection.insert({ foo: 'bar' }, function () {
-        collection.find({ foo: 'bar'}, function (doc) {
-          expect(doc).to.be.ok();
-          done();
-        });
-      });
+    var Cat = mongoose.model('Cat', { name: String });
+
+    var kitty = new Cat({ name: 'Zildjian' });
+    kitty.save(function (err, kiddy) {
+      if (err) throw err;
+      expect(kiddy).to.have.property('name');
+      mongoose.disconnect(done);
     });
   });
 
