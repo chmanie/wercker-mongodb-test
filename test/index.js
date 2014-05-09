@@ -5,7 +5,6 @@ var Lab = require('lab')
   , it = Lab.test
   , expect = require('expect.js')
   , beforeEach = Lab.beforeEach
-  , after = Lab.after
   , mongoose = require('mongoose');
 
 describe('wercker mongodb test', function () {
